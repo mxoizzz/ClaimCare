@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from typing import List, Dict, Any
 from langchain_openai import ChatOpenAI
@@ -21,7 +22,8 @@ def extract_policy_profile(pages: List[Dict[str, str]]) -> Dict[str, Any]:
         llm = ChatOpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=api_key,
-            model="meta-llama/llama-3-8b-instruct:free", # Change to any OpenRouter model like openai/gpt-4o-mini
+            model="openai/gpt-4o-mini",
+            max_tokens=2000,
             temperature=0,
             model_kwargs={
                 "extra_headers": {
@@ -55,12 +57,15 @@ Document Text:
         result_message = chain.invoke({"text": full_text[:15000]})
         result_text = result_message.content
         
-        # safely parse JSON
+        with open("llm_debug_output.txt", "w", encoding="utf-8") as f:
+            f.write(result_text)
+            
         cleaned_result = result_text.strip()
-        if cleaned_result.startswith("```json"):
-            cleaned_result = cleaned_result[7:]
-        if cleaned_result.endswith("```"):
-            cleaned_result = cleaned_result[:-3]
+        
+        # Use regex to find a JSON object in the text
+        match = re.search(r'\{.*\}', cleaned_result, re.DOTALL)
+        if match:
+            cleaned_result = match.group(0)
             
         data = json.loads(cleaned_result.strip())
         
@@ -70,4 +75,6 @@ Document Text:
         
     except Exception as e:
         print(f"Extraction error: {e}")
+        with open("error_log.txt", "w") as f:
+            f.write(str(e))
         return PolicyProfile(waiting_periods={}, exclusions=[]).model_dump()

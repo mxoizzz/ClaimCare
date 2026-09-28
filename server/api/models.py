@@ -30,9 +30,9 @@ class CostEstimateResponse(BaseModel):
     missing_info: Optional[str] = None
 
 class PolicyProfile(BaseModel):
-    sum_insured: Optional[int] = Field(description="The total sum insured amount for the policy")
-    deductible: Optional[int] = Field(description="The mandatory deductible amount, if found")
-    waiting_periods: Dict[str, str] = Field(description="Mapping of condition to the waiting period")
-    room_rent_cap: Optional[str] = Field(description="Room rent capping limits or conditions")
-    copayment_terms: Optional[str] = Field(description="Co-payment rules")
-    exclusions: List[str] = Field(description="List of specific condition exclusions mentioned")
+    sum_insured: Optional[int] = Field(default=None, description="The total sum insured amount for the policy")
+    deductible: Optional[int] = Field(default=None, description="The mandatory deductible amount, if found")
+    waiting_periods: Dict[str, str] = Field(default_factory=dict, description="Mapping of condition to the waiting period")
+    room_rent_cap: Optional[str] = Field(default=None, description="Room rent capping limits or conditions")
+    copayment_terms: Optional[str] = Field(default=None, description="Co-payment rules")
+    exclusions: List[str] = Field(default_factory=list, description="List of specific condition exclusions mentioned")
