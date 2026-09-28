@@ -8,3 +8,5 @@ langchain-openai
 langchain-community
 chromadb
 tiktoken
+python-multipart
+langchain-text-splitters

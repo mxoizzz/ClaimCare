@@ -2,34 +2,72 @@ import os
 import json
 from typing import List, Dict, Any
 from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from api.models import PolicyProfile
 
 def extract_policy_profile(pages: List[Dict[str, str]]) -> Dict[str, Any]:
     """
-    Takes the parsed document pages and extracts the structured PolicyProfile using an LLM.
+    Takes the parsed document pages and extracts the structured PolicyProfile using OpenRouter.
     """
-    # Combine first few pages or strategically sample pages to avoid token limit if needed
-    # For prototype, we'll combine all content (assuming docs fit in context window like GPT-4o)
     full_text = "\n\n".join([f"--- Page {p['page']} ---\n{p['content']}" for p in pages])
     
-    # We use function calling/structured output to guarantee JSON schema
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-    structured_llm = llm.with_structured_output(PolicyProfile)
-    
-    prompt = f"""
-    You are an expert insurance policy analyzer. Review the following policy document text 
-    and extract the key terms into the requested structured format. 
-    If a value is not found or ambiguous, leave it null or empty. DO NOT GUESS.
-    
-    Document Text:
-    {full_text[:50000]}  # limit text length just in case for the prototype
-    """
-    
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        print("OPENROUTER_API_KEY missing!")
+        return PolicyProfile(waiting_periods={}, exclusions=[]).model_dump()
+        
     try:
-        response: PolicyProfile = structured_llm.invoke(prompt)
-        return response.model_dump()
+        # Connect to OpenRouter using ChatOpenAI wrapper
+        llm = ChatOpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+            model="meta-llama/llama-3-8b-instruct:free", # Change to any OpenRouter model like openai/gpt-4o-mini
+            temperature=0,
+            model_kwargs={
+                "extra_headers": {
+                    "HTTP-Referer": "http://localhost:3000", # Optional but requested by OpenRouter
+                    "X-Title": "ClaimClear Prototype",
+                }
+            }
+        )
+        
+        # Some OpenRouter models don't support function calling well, so we use explicit JSON prompts
+        prompt = PromptTemplate.from_template(
+            """You are an expert insurance policy analyzer. Review the policy document text.
+Extract the key terms into the following JSON schema. DO NOT output anything except raw JSON. DO NOT wrap it in Markdown blocks or backticks.
+schema:
+{{
+  "sum_insured": 500000,
+  "deductible": 0,
+  "waiting_periods": {{"pre_existing": "24 months"}},
+  "room_rent_cap": "Single Private Room",
+  "copayment_terms": "20% copay",
+  "exclusions": ["Dental", "Maternity"]
+}}
+If a value is not found, use null or empty appropriately.
+
+Document Text:
+{text}
+"""
+        )
+        
+        chain = prompt | llm
+        result_message = chain.invoke({"text": full_text[:15000]})
+        result_text = result_message.content
+        
+        # safely parse JSON
+        cleaned_result = result_text.strip()
+        if cleaned_result.startswith("```json"):
+            cleaned_result = cleaned_result[7:]
+        if cleaned_result.endswith("```"):
+            cleaned_result = cleaned_result[:-3]
+            
+        data = json.loads(cleaned_result.strip())
+        
+        # Validate against schema via Pydantic
+        profile = PolicyProfile(**data)
+        return profile.model_dump()
+        
     except Exception as e:
         print(f"Extraction error: {e}")
-        # Return empty structured profile on failure
         return PolicyProfile(waiting_periods={}, exclusions=[]).model_dump()

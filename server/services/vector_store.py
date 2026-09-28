@@ -1,13 +1,19 @@
 import os
 from typing import List, Dict
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain.schema import Document
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.documents import Document
 
-# Initialize embedding model (Make sure OPENAI_API_KEY is tested/set)
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = None
 vector_db_dir = "./chroma_db"
+
+def get_embeddings():
+    global embeddings
+    if not embeddings:
+        # Using a fast all-MiniLM model for embeddings.
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    return embeddings
 
 def index_document(document_id: str, pages: List[Dict[str, str]]):
     """
@@ -28,7 +34,7 @@ def index_document(document_id: str, pages: List[Dict[str, str]]):
             docs.append(doc)
             
     # Depending on version this might be slightly different - using Chroma.from_documents
-    db = Chroma.from_documents(docs, embeddings, persist_directory=os.path.join(vector_db_dir, document_id))
+    db = Chroma.from_documents(docs, get_embeddings(), persist_directory=os.path.join(vector_db_dir, document_id))
     db.persist()
     return True
 
@@ -41,7 +47,7 @@ def retrieve_context(document_id: str, query: str, top_k: int = 3) -> str:
     if not os.path.exists(db_path):
         return ""
         
-    db = Chroma(persist_directory=db_path, embedding_function=embeddings)
+    db = Chroma(persist_directory=db_path, embedding_function=get_embeddings())
     results = db.similarity_search(query, k=top_k)
     
     context = ""
