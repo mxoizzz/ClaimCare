@@ -1,34 +1,64 @@
-# ClaimClear
-**Track:** FIN01 — Policy-to-Patient · **Stage:** Hackathon Round 1
+# ClaimClear: Intelligent Medical Insurance Assistant
+Track: FIN01 - Policy-to-Patient | Stage: HackMatrix 5.0
 
-ClaimClear is an AI-powered assistant that lets a user upload an insurance policy document and interact with it conversationally. It extracts structured coverage information (limits, exclusions, waiting periods, deductibles, sub-limits), answers eligibility and coverage questions with verified page/section-level citations, and—when a treatment scenario is provided—estimates likely treatment cost, potentially covered amount, and out-of-pocket expense.
+## Overview
+ClaimClear is an advanced AI-powered assistant designed to democratize and simplify complex medical insurance policies. By leveraging a local RAG (Retrieval-Augmented Generation) pipeline, users can upload unstructured insurance PDF documents and instantly extract structured coverage data, calculate treatment cost estimations based on their extracted policy limits, and ask natural language questions with verified citations.
 
-## Tech Stack
--   **Frontend:** Next.js (React) + Tailwind CSS
--   **Backend:** FastAPI (Python)
--   **AI & Logic:** LangChain / LlamaIndex (OpenAI) + PyMuPDF for parser
+## System Architecture
 
-## Repository Structure
--   `/client`: User Interface and Web Application (Next.js)
--   `/server`: API Backend and AI Processing (FastAPI)
--   `/data`: Mock datasets for treatment costs and sample policies.
+### Frontend Application
+- Framework: Next.js (React)
+- Styling: Tailwind CSS v4
+- Features: Real-time dynamic CSS variable theme injection, animated landing page layout, interactive document uploader, and segmented control panels.
 
-## How to run locally
+### Backend Pipeline
+- Framework: FastAPI (Python)
+- Document Parsing: PyMuPDF
+- Vector Database: ChromaDB (SQLite-backed persistent physical storage)
+- LLM Engine: Llama-3 via OpenRouter API
 
-### Client
+## Core Features
+1. PDF Extraction Engine: Parses documents using Llama-3 to aggressively extract complex constraints such as Sum Insured, Deductibles, Network Tiers (In-Network/PPO), Cashless configurations, and Pre/Post Coverage periods.
+2. Cost Estimator: Uses the extracted structural limits to run fallback algorithms against benchmarked medical procedures (like Cataract Surgery or Bypass Surgery), mathematically calculating exact Out-Of-Pocket values for the patient.
+3. RAG Chat Assistant: Cross-references the user's natural language queries exclusively against their uploaded policy, ensuring zero hallucination.
+
+## Local Setup Instructions
+
+### 1. Client Setup (Next.js)
+Open a terminal and navigate to the client directory:
 ```bash
 cd client
 npm install
 npm run dev
 ```
+The frontend will launch natively on http://localhost:3000 (or 3001).
 
-### Server
+### 2. Server Setup (FastAPI)
+Open a new terminal and navigate to the server directory:
 ```bash
 cd server
 python -m venv venv
-# Activate venv:
-# Windows: .\venv\Scripts\activate
-# Mac/Linux: source venv/bin/activate
+```
+
+Activate the virtual environment:
+Windows: `.\venv\Scripts\activate`
+macOS/Linux: `source venv/bin/activate`
+
+Install dependencies and start the backend:
+```bash
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+The FastAPI backend will bind to http://localhost:8000.
+
+## Environment Variables
+Create a `.env` file inside the `server/` directory and configure the primary LLM provider key:
+```env
+OPENROUTER_API_KEY=your_api_key_here
+```
+
+## Deployment Considerations
+Because ChromaDB persists vector embeddings directly to the disk via an embedded SQLite instance, deploying the backend to serverless environments (like Vercel or AWS Lambda) will result in wiped memory states after each request. 
+To deploy this architecture for production usage:
+1. Frontend: Deploy the `/client` directory to Vercel via standard GitHub integration.
+2. Backend: Deploy the `/server` directory to a managed service with Persistent Disk support (such as Render.com Web Services) mapping the deployment volume back to `/chroma_db`.
