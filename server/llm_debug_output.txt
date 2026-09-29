@@ -1,23 +1,13 @@
 {
   "sum_insured": 1000000,
   "deductible": null,
-  "waiting_periods": {
-    "pre_existing": "24 months"
-  },
+  "waiting_periods": {"pre_existing": "24 months"},
   "room_rent_cap": "Single Private Room",
   "copayment_terms": "10% of each and every claim amount",
-  "exclusions": [
-    "Pregnancy, infertility",
-    "Treatment outside India",
-    "Circumcision, sex change surgery, cosmetic surgery & plastic surgery",
-    "Refractive error correction, hearing impairment correction, corrective & cosmetic dental surgeries",
-    "Substance abuse, self-inflicted injuries",
-    "Hazardous sports, war, terrorism, civil war or breach of law",
-    "Any hospitalization which are not medically necessary / does not warrant hospitalization"
-  ],
-  "policy_type": "Star Health Assure Insurance Policy",
+  "exclusions": ["Dental", "Maternity", "Pregnancy", "Infertility", "Treatment outside India", "Circumcision", "Sex change surgery", "Cosmetic surgery", "Plastic surgery", "Refractive error correction", "Hearing impairment correction", "Corrective dental surgeries", "Substance abuse", "Self-inflicted injuries", "Hazardous sports", "War", "Terrorism", "Civil war", "Breach of law"],
+  "policy_type": "PPO High-Deductible",
   "cashless_facility": true,
   "pre_and_post_coverage": "60 days pre, 180 days post",
-  "network_tier": null,
-  "no_claim_bonus": "25% of the Sum Insured for each claim free year and maximum up to 100% of Sum Insured"
+  "network_tier": "In-Network Preferred",
+  "no_claim_bonus": "25% cumulative up to 100%"
 }
