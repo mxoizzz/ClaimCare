@@ -36,3 +36,10 @@ class PolicyProfile(BaseModel):
     room_rent_cap: Optional[str] = Field(default=None, description="Room rent capping limits or conditions")
     copayment_terms: Optional[str] = Field(default=None, description="Co-payment rules")
     exclusions: List[str] = Field(default_factory=list, description="List of specific condition exclusions mentioned")
+    
+    # New informative fields
+    policy_type: Optional[str] = Field(default="Standard", description="Type of healthcare policy (e.g., HDHP, PPO, EPO)")
+    cashless_facility: bool = Field(default=True, description="Indicates if a cashless network facility is included")
+    pre_and_post_coverage: Optional[str] = Field(default=None, description="Pre and post hospitalization coverage constraints (e.g. 30 days / 60 days)")
+    network_tier: Optional[str] = Field(default="In-Network Only", description="Strictness of the hospital network")
+    no_claim_bonus: Optional[str] = Field(default=None, description="Details on cumulative no claim bonuses")

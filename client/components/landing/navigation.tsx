@@ -8,7 +8,7 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 const navLinks = [
   { name: "Platform", href: "#features" },
   { name: "Interactive MVP", href: "#application" },
-  { name: "GitHub Repo", href: "https://github.com" },
+  { name: "GitHub Repo", href: "https://github.com/mxoizzz/ClaimCare" },
 ];
 
 export function Navigation() {

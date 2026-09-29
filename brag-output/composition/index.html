@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>ClaimClear — Launch Video</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0f1013;
+        color: #fdfdfc;
+        font-family: 'Instrument Sans', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+
+      /* Global Background Grid & Glow */
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-size: 120px 120px;
+        background-image: 
+          linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        pointer-events: none;
+        z-index: 1;
+      }
+      .bg-ambient {
+        position: absolute;
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(74, 222, 128, 0.08) 0%, rgba(59, 130, 246, 0.04) 50%, transparent 70%);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      /* Scene Container */
+      .clip.scene {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        padding: 80px;
+      }
+
+      /* Typography Utilities */
+      .font-serif {
+        font-family: 'Instrument Serif', Georgia, serif;
+      }
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* Common Components */
+      .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 18px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        font-size: 15px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #a1a1aa;
+        margin-bottom: 24px;
+      }
+      .pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 10px #4ade80;
+      }
+
+      /* Card styling */
+      .glass-card {
+        background: rgba(26, 28, 33, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        backdrop-filter: blur(20px);
+      }
+
+      /* Scene 1 Elements */
+      #s1-title {
+        font-size: 110px;
+        line-height: 1.05;
+        font-weight: 400;
+        text-align: center;
+        max-width: 1400px;
+      }
+      #s1-sub {
+        font-size: 64px;
+        font-style: italic;
+        color: #a1a1aa;
+        margin-top: 24px;
+        text-align: center;
+      }
+      #s1-punch {
+        font-size: 80px;
+        font-weight: 500;
+        color: #fdfdfc;
+        margin-top: 30px;
+        text-align: center;
+        opacity: 0;
+      }
+
+      /* Scene 2 Elements */
+      #s2-card {
+        width: 1050px;
+        padding: 50px 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .dropzone {
+        width: 100%;
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        border-radius: 18px;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .file-pill {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(74, 222, 128, 0.5);
+        padding: 14px 28px;
+        border-radius: 14px;
+        font-size: 20px;
+        color: #fdfdfc;
+        margin-bottom: 20px;
+      }
+      .tags-row {
+        display: flex;
+        gap: 20px;
+        width: 100%;
+        margin-top: 36px;
+        justify-content: center;
+      }
+      .profile-tag {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px 24px;
+        text-align: left;
+      }
+      .profile-tag .label {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #a1a1aa;
+        margin-bottom: 8px;
+      }
+      .profile-tag .value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #fdfdfc;
+      }
+
+      /* Scene 3 Elements */
+      #s3-content {
+        width: 1200px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .cost-split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        width: 100%;
+        margin-bottom: 32px;
+      }
+      .cost-box {
+        padding: 44px;
+        border-radius: 20px;
+      }
+      .cost-box.patient {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .cost-box.insurance {
+        background: rgba(74, 222, 128, 0.06);
+        border: 1px solid rgba(74, 222, 128, 0.35);
+      }
+      .cost-box .caption {
+        font-size: 16px;
+        color: #a1a1aa;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+      }
+      .cost-box .amount {
+        font-size: 88px;
+        line-height: 1;
+        margin-bottom: 12px;
+      }
+      .cost-box.insurance .amount {
+        color: #4ade80;
+      }
+      .cost-box .note {
+        font-size: 15px;
+        color: #a1a1aa;
+      }
+      .citation-card {
+        width: 100%;
+        padding: 24px 32px;
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 4px solid #4ade80;
+        border-radius: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      /* Scene 4 Outro */
+      #s4-logo {
+        font-size: 130px;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: 24px;
+      }
+      #s4-tagline {
+        font-size: 38px;
+        color: #a1a1aa;
+        max-width: 950px;
+        text-align: center;
+        line-height: 1.4;
+        margin-bottom: 48px;
+      }
+      .tech-badges {
+        display: flex;
+        gap: 16px;
+      }
+      .tech-badge {
+        padding: 10px 22px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        font-size: 16px;
+        color: #fdfdfc;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="20"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- Audio Elements -->
+      <audio
+        id="bg-music"
+        src="assets/music/music.mp3"
+        data-start="0"
+        data-duration="20"
+        data-volume="0.75"
+        data-fade-out="2"
+      ></audio>
+      <audio
+        id="sfx-drop"
+        src="assets/sfx/drop.ogg"
+        data-start="5.0"
+        data-duration="0.11"
+        data-volume="0.8"
+      ></audio>
+      <audio
+        id="sfx-click-1"
+        src="assets/sfx/click.ogg"
+        data-start="6.3"
+        data-duration="0.10"
+        data-volume="0.6"
+      ></audio>
+      <audio
+        id="sfx-click-2"
+        src="assets/sfx/click.ogg"
+        data-start="7.0"
+        data-duration="0.10"
+        data-volume="0.6"
+      ></audio>
+      <audio
+        id="sfx-click-3"
+        src="assets/sfx/click.ogg"
+        data-start="7.7"
+        data-duration="0.10"
+        data-volume="0.6"
+      ></audio>
+      <audio
+        id="sfx-switch"
+        src="assets/sfx/switch.ogg"
+        data-start="9.8"
+        data-duration="0.62"
+        data-volume="0.7"
+      ></audio>
+      <audio
+        id="sfx-chime"
+        src="assets/sfx/chime.ogg"
+        data-start="10.8"
+        data-duration="0.12"
+        data-volume="0.7"
+      ></audio>
+      <div class="bg-grid"></div>
+      <div id="ambient-glow" class="bg-ambient"></div>
+
+      <!-- SCENE 1: THE DILEMMA -->
+      <section id="scene-1" class="clip scene" data-start="0" data-duration="4.6">
+        <div id="s1-badge" class="pill-badge font-mono">
+          <span class="pill-dot"></span>
+          FIN01 · POLICY-TO-PATIENT ASSISTANT
+        </div>
+        <h1 id="s1-title" class="font-serif">
+          60-page health insurance policy.
+        </h1>
+        <p id="s1-sub" class="font-serif">
+          Zero idea what it actually covers.
+        </p>
+        <p id="s1-punch" class="font-serif">
+          Until now.
+        </p>
+      </section>
+
+      <!-- SCENE 2: DROP & STRUCTURED EXTRACTION -->
+      <section id="scene-2" class="clip scene" data-start="4.5" data-duration="5.2">
+        <div class="pill-badge font-mono">
+          <span class="pill-dot"></span>
+          INSTANT INGESTION · LLAMA-3 PARSER
+        </div>
+        <div id="s2-card" class="glass-card">
+          <div class="dropzone">
+            <div id="s2-file" class="file-pill font-mono">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>Comprehensive_Medical_Policy_2026.pdf</span>
+              <span style="font-size: 13px; color: #4ade80; margin-left: 12px;">● MOUNTED</span>
+            </div>
+            <p style="color: #a1a1aa; font-size: 16px;">
+              Extraction engine resolved policy parameters across 48 pages
+            </p>
+          </div>
+
+          <div class="tags-row font-mono">
+            <div id="tag-1" class="profile-tag">
+              <div class="label">Sum Insured</div>
+              <div class="value">$500,000</div>
+            </div>
+            <div id="tag-2" class="profile-tag">
+              <div class="label">Deductible</div>
+              <div class="value">$1,500</div>
+            </div>
+            <div id="tag-3" class="profile-tag">
+              <div class="label">Waiting Period</div>
+              <div class="value">24 Months</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 3: COST ESTIMATOR & CITATION -->
+      <section id="scene-3" class="clip scene" data-start="9.5" data-duration="6.1">
+        <div class="pill-badge font-mono">
+          <span class="pill-dot"></span>
+          REAL-TIME OUT-OF-POCKET ESTIMATION
+        </div>
+        <div id="s3-content">
+          <div style="margin-bottom: 24px; text-align: center;">
+            <span class="font-serif" style="font-size: 32px; color: #fdfdfc;">
+              Target Scenario: <strong style="color: #4ade80;">Cataract Surgery</strong>
+            </span>
+            <span class="font-mono" style="margin-left: 16px; color: #a1a1aa; font-size: 16px;">
+              [City Tier 1 · Hospital Grade A]
+            </span>
+          </div>
+
+          <div class="cost-split">
+            <div id="cost-patient" class="cost-box patient glass-card">
+              <div class="caption font-mono">Your Total Out-of-Pocket</div>
+              <div class="amount font-serif">$1,200</div>
+              <div class="note font-mono">&gt; Deductible ($1,000) + 10% Co-pay</div>
+            </div>
+            <div id="cost-insurance" class="cost-box insurance glass-card">
+              <div class="caption font-mono" style="color: #4ade80;">Insurance Pays</div>
+              <div class="amount font-serif">$3,800</div>
+              <div class="note font-mono" style="color: #4ade80;">&gt; Sub-limit Cap Approved</div>
+            </div>
+          </div>
+
+          <div id="citation-box" class="citation-card font-mono">
+            <div style="font-size: 13px; color: #4ade80; margin-bottom: 6px; letter-spacing: 0.08em;">
+              VERIFIED POLICY CITATION · CONFIDENCE: 98%
+            </div>
+            <div style="font-size: 16px; color: #fdfdfc; line-height: 1.5;">
+              "Cataract procedures covered under Section 4.2 up to $4,000 per eye. Pre-existing clause satisfied. (Page 18, Paragraph 3)"
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCENE 4: PUNCHLINE & OUTRO -->
+      <section id="scene-4" class="clip scene" data-start="15.5" data-duration="4.5">
+        <div class="pill-badge font-mono">
+          <span class="pill-dot"></span>
+          HACKMATRIX 5.0 WINNER'S EDITION
+        </div>
+        <h1 id="s4-logo" class="font-serif">
+          ClaimClear
+        </h1>
+        <p id="s4-tagline" class="font-serif">
+          Know what they pay before you reach the hospital desk.
+        </p>
+        <div id="s4-badges" class="tech-badges font-mono">
+          <div class="tech-badge">Next.js</div>
+          <div class="tech-badge">FastAPI</div>
+          <div class="tech-badge">LlamaIndex</div>
+          <div class="tech-badge">PyMuPDF</div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Ambient pulse
+      tl.to("#ambient-glow", {
+        scale: 1.25,
+        opacity: 0.8,
+        duration: 4,
+        yoyo: true,
+        repeat: 4,
+        ease: "sine.inOut"
+      }, 0);
+
+      // --- SCENE 1 (0.0s - 4.5s) ---
+      tl.fromTo("#s1-badge", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+      tl.fromTo("#s1-title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 0.4);
+      tl.fromTo("#s1-sub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.2);
+      // Punchline transition inside scene 1
+      tl.to("#s1-sub", { opacity: 0, y: -20, duration: 0.4, ease: "power2.in" }, 2.8);
+      tl.fromTo("#s1-punch", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.5)" }, 3.1);
+      tl.to("#scene-1", { opacity: 0, y: -30, duration: 0.5, ease: "power2.in" }, 4.1);
+
+      // --- SCENE 2 (4.5s - 9.5s) ---
+      tl.fromTo("#scene-2", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 4.5);
+      tl.fromTo("#s2-file", { opacity: 0, scale: 0.9, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.2)" }, 5.0);
+      tl.fromTo("#tag-1", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 6.3);
+      tl.fromTo("#tag-2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 7.0);
+      tl.fromTo("#tag-3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 7.7);
+      tl.to("#scene-2", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 9.1);
+
+      // --- SCENE 3 (9.5s - 15.5s) ---
+      tl.fromTo("#scene-3", { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, 9.5);
+      tl.fromTo("#cost-patient", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 10.3);
+      tl.fromTo("#cost-insurance", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 10.8);
+      tl.fromTo("#citation-box", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 12.0);
+      tl.to("#scene-3", { opacity: 0, y: -20, duration: 0.5, ease: "power2.in" }, 15.1);
+
+      // --- SCENE 4 (15.5s - 20.0s) ---
+      tl.fromTo("#scene-4", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 15.5);
+      tl.fromTo("#s4-logo", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 15.8);
+      tl.fromTo("#s4-tagline", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 16.4);
+      tl.fromTo("#s4-badges", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 17.2);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

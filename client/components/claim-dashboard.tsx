@@ -126,12 +126,20 @@ export function ClaimDashboard() {
                     {/* Policy Profile Panel */}
                     <div className="bg-foreground/5 p-6 rounded-xl border border-foreground/10">
                         <h3 className="font-display text-2xl mb-4">Extracted Profile</h3>
-                        <div className="space-y-4 text-sm font-mono text-muted-foreground">
+                        <div className="space-y-3 text-sm font-mono text-muted-foreground whitespace-pre-wrap">
+                            <p><span className="text-foreground">Type:</span> {profile?.policy_type || "Standard"}</p>
+                            <p><span className="text-foreground">Network:</span> {profile?.network_tier || "N/A"}</p>
+                            <p><span className="text-foreground">Cashless Enabled:</span> {profile?.cashless_facility ? "Yes" : "No"}</p>
+                            <div className="h-px w-full bg-foreground/10 my-2" />
                             <p><span className="text-foreground">Sum Insured:</span> ${profile?.sum_insured || "N/A"}</p>
                             <p><span className="text-foreground">Deductible:</span> ${profile?.deductible || "0"}</p>
+                            <p><span className="text-foreground">Copay:</span> {profile?.copayment_terms || "0%"}</p>
+                            <p><span className="text-foreground">Bonus:</span> {profile?.no_claim_bonus || "None"}</p>
+                            <div className="h-px w-full bg-foreground/10 my-2" />
+                            <p><span className="text-foreground">Pre/Post Coverage:</span> {profile?.pre_and_post_coverage || "N/A"}</p>
                             <p><span className="text-foreground">Exclusions:</span> {profile?.exclusions?.join(", ") || "None"}</p>
                         </div>
-                        <button onClick={() => setDocId(null)} className="mt-8 text-xs underline text-muted-foreground">Reset & Upload New</button>
+                        <button onClick={() => setDocId(null)} className="mt-8 text-xs underline text-muted-foreground hover:text-foreground">Reset & Upload New</button>
                     </div>
 
                     <div className="lg:col-span-2 space-y-8">
@@ -147,7 +155,7 @@ export function ClaimDashboard() {
                                 />
                                 <button
                                     onClick={handleEstimate}
-                                    className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                                    className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity whitespace-nowrap"
                                 >
                                     {isEstimating ? "Calculating..." : "Run Estimate"}
                                 </button>
@@ -162,7 +170,7 @@ export function ClaimDashboard() {
                                         </div>
                                         <div>
                                             <p className="text-xs text-muted-foreground mb-1">Insurance Covers</p>
-                                            <p className="text-3xl font-display text-green-500">${estimateResponse.covered_amount}</p>
+                                            <p className="text-3xl font-display text-primary">${estimateResponse.covered_amount}</p>
                                         </div>
                                     </div>
                                     <div className="text-xs font-mono text-muted-foreground space-y-1">
@@ -185,7 +193,7 @@ export function ClaimDashboard() {
                             />
                             <button
                                 onClick={handleChat}
-                                className="bg-foreground text-background px-6 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity"
+                                className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity whitespace-nowrap"
                             >
                                 {isChatting ? "Searching Policy..." : "Ask Question"}
                             </button>
