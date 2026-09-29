@@ -44,7 +44,12 @@ schema:
   "waiting_periods": {{"pre_existing": "24 months"}},
   "room_rent_cap": "Single Private Room",
   "copayment_terms": "20% copay",
-  "exclusions": ["Dental", "Maternity"]
+  "exclusions": ["Dental", "Maternity"],
+  "policy_type": "PPO High-Deductible",
+  "cashless_facility": true,
+  "pre_and_post_coverage": "30 days pre, 60 days post",
+  "network_tier": "In-Network Preferred",
+  "no_claim_bonus": "10% cumulative up to 50%"
 }}
 If a value is not found, use null or empty appropriately.
 

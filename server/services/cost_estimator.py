@@ -60,29 +60,33 @@ def estimate_treatment_cost(request: CostEstimateRequest, profile: PolicyProfile
             }
 
     # 5. Calculate Copay & Deductibles
-    deductible = profile.deductible or 0
-    reasoning.append(f"Applied deductible: ${deductible}")
+    deductible = profile.deductible if profile.deductible is not None else 100  # Fallback realistic deductible for the demo
+    reasoning.append(f"Applied deductible: ${deductible}" + (" (Baseline Fallback)" if profile.deductible is None else ""))
     
     remaining_after_deductible = max(0, avg_cost - deductible)
     
     # parse copay (e.g. "20% copay")
-    copay_pct = 0
+    copay_pct = 10  # Hackathon baseline fallback
     if profile.copayment_terms and "%" in profile.copayment_terms:
         try:
             copay_pct = int(profile.copayment_terms.split("%")[0].split()[-1])
-            reasoning.append(f"Applied Co-pay: {copay_pct}%")
         except:
             pass
+    reasoning.append(f"Applied Co-pay: {copay_pct}%" + (" (Baseline Fallback)" if not profile.copayment_terms else ""))
             
     copay_amount = int(remaining_after_deductible * (copay_pct / 100.0))
     covered_amount = remaining_after_deductible - copay_amount
     out_of_pocket = deductible + copay_amount
     
     # 6. Apply Sum Insured Cap
-    if profile.sum_insured and covered_amount > profile.sum_insured:
-        reasoning.append(f"Cap hit: Coverage exceeds maximum sum insured of ${profile.sum_insured}")
-        out_of_pocket += (covered_amount - profile.sum_insured)
-        covered_amount = profile.sum_insured
+    effective_sum_insured = profile.sum_insured if profile.sum_insured is not None else 50000 # Realistic cap
+    if covered_amount > effective_sum_insured:
+        reasoning.append(f"Cap hit: Coverage exceeds maximum sum insured of ${effective_sum_insured}" + (" (Simulated Baseline)" if profile.sum_insured is None else ""))
+        out_of_pocket += (covered_amount - effective_sum_insured)
+        covered_amount = effective_sum_insured
+    else:
+        if profile.sum_insured is None:
+             reasoning.append("Warning: Could not parse Maximum Sum Insured from PDF. Applied structural $50,000 baseline cap for calculation.")
         
     reasoning.append(f"Estimated Patient Out-of-Pocket: ${out_of_pocket}")
     
