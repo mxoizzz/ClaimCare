@@ -1,7 +1,7 @@
 # ClaimClear: Intelligent Medical Insurance Assistant
 Track: FIN01 - Policy-to-Patient | Stage: HackMatrix 5.0
 
-![ClaimClear Product Demonstration](./assets/demo.mp4)
+<video src="./assets/demo.mp4" controls="controls" width="100%" autoplay loop muted></video>
 
 ## Overview
 ClaimClear is an advanced AI-powered assistant designed to democratize and simplify complex medical insurance policies. By leveraging a local RAG (Retrieval-Augmented Generation) pipeline, users can upload unstructured insurance PDF documents and instantly extract structured coverage data, calculate treatment cost estimations based on their extracted policy limits, and ask natural language questions with verified citations.
